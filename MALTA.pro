@@ -47,4 +47,13 @@ FORMS    += mainwindow.ui
 
 RESOURCES +=
 
-QMAKE_POST_LINK += "/Users/piperlab/Softwares/Qt5/5.7/clang_64/bin/macdeployqt MALTA.app -no-strip"
+macx {
+    IFILE = $$OUT_PWD/MALTA.app/Contents/Info.plist
+    copyinfo.commands = $(COPY_FILE) $$PWD/Info.plist $$IFILE
+    first.depends = $(first) copyinfo
+    export(first.depends)
+    export(copyinfo.commands)
+
+    QMAKE_POST_LINK += "/Users/piperlab/Softwares/Qt5/5.7/clang_64/bin/macdeployqt MALTA.app -no-strip"
+
+}
