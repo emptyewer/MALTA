@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>NSPrincipalClass</key>
+	<string>NSApplication</string>
+	<key>CFBundleIconFile</key>
+	<string>Icon.icns</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleSignature</key>
+	<string>Mac Pro</string>
+	<key>CFBundleExecutable</key>
+	<string>MALTA</string>
+	<key>CFBundleIdentifier</key>
+	<string>com.uiowa.malta</string>
+	<key>NSHumanReadableCopyright</key>
+	<string>Copyright © 2017 Venkatramanan Krishnamani, Robert C. Piper, Mark Stammnes.</string>
+	<key>CFBundleDisplayName</key>
+	<string>MALTA β0.1</string>
+	<key>CFBundleName</key>
+	<string>MAPster β0.1</string>
+	<key>CFBundleVersion</key>
+	<string>β0.1</string>
+	<key>LSApplicationCategoryType</key>
+	<string>public.app-category.education</string>
+	<key>CFBundleShortVersionString</key>
+	<string>β0.1</string>
+</dict>
+</plist>
