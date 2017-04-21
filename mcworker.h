@@ -7,7 +7,7 @@ class MCWorker : public QObject {
   Q_OBJECT
 public:
   explicit MCWorker(QMap<QString, double>, QList<QString>, unsigned long c,
-                    unsigned long t);
+                    unsigned long t, int);
 
 public slots:
   void doWork();
@@ -15,7 +15,7 @@ public slots:
 
 signals:
   void update_value(int, QString);
-  void finished();
+  void finished(int);
 
 private:
   template class QMap<QString, double> map;
@@ -23,6 +23,7 @@ private:
   unsigned long count;
   unsigned long trials;
   bool counting;
+  int thread;
 };
 
 #endif // MCWORKER_H

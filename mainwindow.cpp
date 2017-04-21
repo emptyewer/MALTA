@@ -18,7 +18,6 @@ MainWindow::MainWindow(QWidget *parent)
   f = new FileReader();
   connect(ui->customPlot, SIGNAL(mousePress(QMouseEvent *)), this,
           SLOT(showPointToolTip(QMouseEvent *)));
-  countRunning = false;
   ui->tabWidget->setTabEnabled(1, false);
   setup_graph();
   toggle_able(false);
@@ -180,7 +179,7 @@ void MainWindow::find_range() {
       narrow_range(prev_key, key);
     }
   }
-  ui->reads_label->setText(QString("%L1 reads").arg(trials));
+  ui->reads_label->setText(QString("%L1 minimum picks").arg(trials));
   ui->reads->setValue(trials);
 }
 
@@ -293,28 +292,45 @@ void MainWindow::showPointToolTip(QMouseEvent *event) {
 }
 
 void MainWindow::on_simulate_clicked() {
+  repeats = 1;
   QList<QString> genes = get_sorted_genes();
   for (int j = 0; j < genes.size(); ++j) {
     prior_distribution._simulated_counts[genes[j]] = {};
   }
-  MCWorker *worker;
-  workerThread = new QThread;
-  worker = new MCWorker(prior_distribution._filtered_counts, genes,
-                        prior_distribution.fcount, ui->reads->value());
-  if (countRunning) {
-    QMessageBox::critical(this, "Error", "MC simulation is already running!");
-    return;
+  control_threads();
+}
+
+void MainWindow::control_threads() {
+  threads = 1;
+  QList<QString> genes = get_sorted_genes();
+  while (true) {
+    if (repeats > 10) {
+      break;
+    }
+    if (threads > QThread::idealThreadCount()) {
+      break;
+    }
+    launch_mc_threaad(genes);
+    threads += 1;
+    repeats += 1;
   }
+}
+
+void MainWindow::launch_mc_threaad(QList<QString> genes) {
+  QThread *workerThread = new QThread;
+  MCWorker *worker;
+  worker = new MCWorker(prior_distribution._filtered_counts, genes,
+                        prior_distribution.fcount, ui->reads->value(), repeats);
+
   worker->moveToThread(workerThread);
   connect(workerThread, SIGNAL(started()), worker, SLOT(doWork()));
-  connect(worker, SIGNAL(finished()), workerThread, SLOT(quit()));
-  connect(worker, SIGNAL(finished()), worker, SLOT(deleteLater()));
-  connect(worker, SIGNAL(finished()), this, SLOT(simulation_finished()));
+  connect(worker, SIGNAL(finished(int)), workerThread, SLOT(quit()));
+  connect(worker, SIGNAL(finished(int)), worker, SLOT(deleteLater()));
+  connect(worker, SIGNAL(finished(int)), this, SLOT(simulation_finished(int)));
   connect(workerThread, SIGNAL(finished()), workerThread, SLOT(deleteLater()));
   connect(worker, SIGNAL(update_value(int, QString)), this,
           SLOT(partial_simulation_finished(int, QString)));
   workerThread->start();
-  countRunning = true;
   ui->simulate->setEnabled(false);
 }
 
@@ -322,12 +338,16 @@ void MainWindow::partial_simulation_finished(int value, QString gene) {
   prior_distribution._simulated_counts[gene].append(value);
 }
 
-void MainWindow::simulation_finished() {
-  countRunning = false;
+void MainWindow::simulation_finished(int thread) {
   ui->simulate->setEnabled(true);
-  update_counts_table();
-  update_table_colors(ui->count_table);
-  qDebug() << "Simulation Finished";
+  if (thread == 10) {
+    update_counts_table();
+    update_table_colors(ui->count_table);
+    //    qDebug() << prior_distribution._simulated_counts;
+    qDebug() << "Simulation Finished";
+  } else {
+    control_threads();
+  }
 }
 
 void MainWindow::update_counts_table() {

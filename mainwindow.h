@@ -31,7 +31,7 @@ private slots:
 
   void on_simulate_clicked();
   void partial_simulation_finished(int, QString);
-  void simulation_finished();
+  void simulation_finished(int);
 
   void on_lower_slider_sliderReleased();
 
@@ -49,11 +49,10 @@ private:
   unsigned long trials;
   double target;
   QMap<double, double> sortMap;
-  bool countRunning;
-  QThread *workerThread;
   QStandardItemModel my_model;
   QSortFilterProxyModel proxy_model;
-
+  int repeats;
+  int threads;
   void find_range();
   void narrow_range(unsigned long start, unsigned long end);
   double cumulative_p_at_trial(unsigned long);
@@ -67,6 +66,8 @@ private:
   void bound_genes();
   void setup_graph();
   void toggle_able(bool b);
+  void launch_mc_threaad(QList<QString>);
+  void control_threads();
 };
 
 #endif // MAINWINDOW_H
