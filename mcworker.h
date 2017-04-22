@@ -18,7 +18,7 @@ signals:
   void finished(int);
 
 private:
-  template class QMap<QString, double> map;
+  QMap<QString, double> map;
   QList<QString> genes;
   unsigned long count;
   unsigned long trials;

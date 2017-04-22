@@ -60,5 +60,5 @@ macx {
 
 win32 {
     ICON = Icon.ico
-    QMAKE_POST_LINK += "C:\Qt\5.7\msvc2013_64\bin\windeployqt"
+    #"C:\Qt\5.7\msvc2013_64\bin\windeployqt <path to the binary>"
 }
