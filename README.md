@@ -4,6 +4,8 @@ Objects in the **M**irror **A**ppear **L**arger **T**han **A**ctual
 
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/283a51c7852e43b4a536e32aa32cf16d)](https://www.codacy.com/app/emptyewer/MALTA?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=emptyewer/MALTA&amp;utm_campaign=Badge_Grade)
 
+[![Github All Releases](https://img.shields.io/github/downloads/atom/atom/total.svg)]()
+
 ![alt text](malta.png "")
 
 
