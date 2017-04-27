@@ -1,5 +1,7 @@
 # MALTA
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/283a51c7852e43b4a536e32aa32cf16d)](https://www.codacy.com/app/emptyewer/MALTA?utm_source=github.com&utm_medium=referral&utm_content=emptyewer/MALTA&utm_campaign=badger)
+
 Objects in the **M**irror **A**ppear **L**arger **T**han **A**ctual
 
 *****
