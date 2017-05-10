@@ -221,7 +221,7 @@
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
-        <string>Prior Probability</string>
+        <string>Input Data</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout">
         <item>

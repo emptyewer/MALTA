@@ -68,6 +68,7 @@ private:
   void toggle_able(bool b);
   void launch_mc_threaad(QList<QString>);
   void control_threads();
+  QStringList headers;
 };
 
 #endif // MAINWINDOW_H

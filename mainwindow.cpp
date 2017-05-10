@@ -10,6 +10,7 @@
 #include <QThread>
 #include <iostream>
 #include <math.h>
+#include <stdio.h>
 #include <time.h>
 
 MainWindow::MainWindow(QWidget *parent)
@@ -37,6 +38,8 @@ void MainWindow::on_action_import_prior_triggered() {
       tr("Gene Count Files (*.csv)"));
   if (QFileInfo(fileName).exists()) {
     csv::Parser file = csv::Parser(fileName.toStdString());
+    headers << QString::fromStdString(file.getHeader().at(0))
+            << QString::fromStdString(file.getHeader().at(1));
     QMap<QString, int> _temp;
     for (unsigned int i = 0; i < file.rowCount(); i++) {
       double c = std::atof(file[i][1].c_str());
@@ -114,7 +117,7 @@ void MainWindow::list_filtered_genes() {
   // Clear Prior Table
   QList<QString> filtered_genes = prior_distribution._filtered_counts.keys();
   ui->prior_table->clear();
-  ui->prior_table->setHorizontalHeaderLabels({"Gene", "Counts"});
+  ui->prior_table->setHorizontalHeaderLabels(headers);
   ui->prior_table->setRowCount(filtered_genes.length());
   for (int i = 0; i < filtered_genes.length(); i++) {
     QTableWidgetItem *gene_name = new QTableWidgetItem(filtered_genes.at(i));
@@ -247,7 +250,7 @@ void MainWindow::plot_counts() {
   int upper_bound = (100 - ui->upper_slider->value()) * genes.length() / 100;
 
   for (int i = 1; i < genes.length(); i++) {
-    if (i > lower_bound && i < upper_bound) {
+    if (i >= lower_bound && i <= upper_bound) {
       x.append(i);
       y.append(prior_distribution._filtered_counts[genes.at(i)]);
     } else {
@@ -276,7 +279,7 @@ void MainWindow::update_table_colors(QTableWidget *table) {
   int lower_bound = ui->lower_slider->value() * genes.length() / 100;
   int upper_bound = (100 - ui->upper_slider->value()) * genes.length() / 100;
   for (int j = 0; j < genes.length(); j++) {
-    if (j > lower_bound && j < upper_bound) {
+    if (j >= lower_bound && j <= upper_bound) {
       table->item(j, 0)->setBackgroundColor(red_color);
     } else {
       table->item(j, 0)->setBackgroundColor(gray_color);
