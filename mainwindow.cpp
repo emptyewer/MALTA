@@ -9,6 +9,7 @@
 #include <QStandardPaths>
 #include <QThread>
 #include <iostream>
+#include <limits>
 #include <math.h>
 #include <stdio.h>
 #include <time.h>
@@ -41,8 +42,16 @@ void MainWindow::on_action_import_prior_triggered() {
     headers << QString::fromStdString(file.getHeader().at(0))
             << QString::fromStdString(file.getHeader().at(1));
     QMap<QString, int> _temp;
+    double min = std::numeric_limits<double>::max();
+    double max = std::numeric_limits<double>::min();
     for (unsigned int i = 0; i < file.rowCount(); i++) {
       double c = std::atof(file[i][1].c_str());
+      if (c < min) {
+        min = c;
+      }
+      if (c > max) {
+        max = c;
+      }
       QString g = QString::fromStdString(file[i][0]);
       if (c > 0) {
         if (prior_distribution._counts.contains(g)) {
@@ -54,6 +63,8 @@ void MainWindow::on_action_import_prior_triggered() {
         }
       }
     }
+    ui->cutoff->setMaximum(max);
+    ui->cutoff->setMinimum(min);
     qDebug() << "Lower Slider: " << ui->lower_slider->value();
     qDebug() << "Upper Slider: " << ui->upper_slider->value();
     qDebug() << "Prior Size: " << prior_distribution._counts.size();
