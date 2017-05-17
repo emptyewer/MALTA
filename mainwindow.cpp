@@ -17,7 +17,6 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow) {
   ui->setupUi(this);
-  f = new FileReader();
   connect(ui->customPlot, SIGNAL(mousePress(QMouseEvent *)), this,
           SLOT(showPointToolTip(QMouseEvent *)));
   ui->tabWidget->setTabEnabled(1, false);
@@ -42,13 +41,9 @@ void MainWindow::on_action_import_prior_triggered() {
     headers << QString::fromStdString(file.getHeader().at(0))
             << QString::fromStdString(file.getHeader().at(1));
     QMap<QString, int> _temp;
-    double min = std::numeric_limits<double>::max();
     double max = std::numeric_limits<double>::min();
     for (unsigned int i = 0; i < file.rowCount(); i++) {
       double c = std::atof(file[i][1].c_str());
-      if (c < min) {
-        min = c;
-      }
       if (c > max) {
         max = c;
       }
@@ -64,10 +59,10 @@ void MainWindow::on_action_import_prior_triggered() {
       }
     }
     ui->cutoff->setMaximum(max);
-    ui->cutoff->setMinimum(min);
-    qDebug() << "Lower Slider: " << ui->lower_slider->value();
-    qDebug() << "Upper Slider: " << ui->upper_slider->value();
-    qDebug() << "Prior Size: " << prior_distribution._counts.size();
+    ui->cutoff->setMinimum(0.0);
+    //    qDebug() << "Lower Slider: " << ui->lower_slider->value();
+    //    qDebug() << "Upper Slider: " << ui->upper_slider->value();
+    //    qDebug() << "Prior Size: " << prior_distribution._counts.size();
     calculate_occurance();
     toggle_able(true);
   }
@@ -119,9 +114,9 @@ void MainWindow::filter_genes() {
       prior_distribution.fcount += values.at(j);
     }
   }
-  qDebug() << "(filter_genes) Total: " << prior_distribution.fcount;
-  qDebug() << "(filter_genes) Filtered Genes: "
-           << prior_distribution._filtered_counts.keys().length();
+  //  qDebug() << "(filter_genes) Total: " << prior_distribution.fcount;
+  //  qDebug() << "(filter_genes) Filtered Genes: "
+  //  << prior_distribution._filtered_counts.keys().length();
 }
 
 void MainWindow::list_filtered_genes() {
@@ -147,14 +142,14 @@ void MainWindow::bound_genes() {
   QList<QString> genes = get_sorted_genes();
   int lower_bound = ui->lower_slider->value() * genes.length() / 100;
   int upper_bound = (100 - ui->upper_slider->value()) * genes.length() / 100;
-  qDebug() << "Lower Bound: " << lower_bound;
-  qDebug() << "Upper Bound: " << upper_bound;
+  //  qDebug() << "Lower Bound: " << lower_bound;
+  //  qDebug() << "Upper Bound: " << upper_bound;
   for (int i = lower_bound; i < upper_bound; i++) {
     prior_distribution._bound_counts[genes[i]] =
         prior_distribution._filtered_counts[genes[i]];
   }
-  qDebug() << "(filter_genes) Bound Genes: "
-           << prior_distribution._bound_counts.keys().length();
+  //  qDebug() << "(filter_genes) Bound Genes: "
+  //  << prior_distribution._bound_counts.keys().length();
 }
 
 void MainWindow::find_range() {
@@ -162,30 +157,39 @@ void MainWindow::find_range() {
   target = ui->confidence->value();
   rounds.clear();
   QList<QString> bound_genes = prior_distribution._bound_counts.keys();
-  QMap<QString, double> _bound_c_np;
+  QMap<QString, long double> _bound_c_np;
   _bound_c_np.clear();
   // Initialize cumulative not prob
   for (int i = 0; i < bound_genes.length(); i++) {
     QString fgene = bound_genes.at(i);
-    _bound_c_np[fgene] = 1 - (prior_distribution._bound_counts[fgene] /
-                              prior_distribution.fcount);
+    _bound_c_np[fgene] =
+        static_cast<long double>(1 - (prior_distribution._bound_counts[fgene] /
+                                      prior_distribution.fcount));
   }
 
-  double p_atleast_one = 0.0;
-  while (p_atleast_one < 0.9999) {
+  long double p_atleast_one = static_cast<long double>(0.0);
+  while (p_atleast_one < static_cast<long double>(0.999999)) {
     trials = trials * 2;
-    double cum_sum = 0.0;
+    long double cum_sum = static_cast<long double>(1.0);
     for (int i = 0; i < bound_genes.length(); i++) {
       QString fgene = bound_genes.at(i);
-      double np = _bound_c_np[fgene];
+      long double np = _bound_c_np[fgene];
       _bound_c_np[fgene] = np * np;
-      cum_sum += np * np;
+      cum_sum = cum_sum * (1 - _bound_c_np[fgene]);
     }
-    p_atleast_one = 1 - cum_sum;
-    rounds[trials] = p_atleast_one;
+    // First way of doing it.
+    //    p_atleast_one =
+    //        static_cast<long double>(1.0) - static_cast<long double>(cum_sum);
+    // Heaps law way of doing it
+    //    p_atleast_one =
+    //        (prior_distribution._filtered_counts.keys().length() - cum_sum) /
+    //        prior_distribution._filtered_counts.keys().length();
+    p_atleast_one = cum_sum;
+    //    std::cout << cum_sum << p_atleast_one
+    //              << prior_distribution._filtered_counts.keys().length();
+    rounds[trials] = static_cast<double>(p_atleast_one);
   }
-  qDebug() << "(find_range) Rounds: " << rounds;
-
+  //  qDebug() << "(find_range) Rounds: " << rounds;
   for (int i = 1; i < rounds.keys().length(); i++) {
     unsigned long prev_key = rounds.keys().at(i - 1);
     unsigned long key = rounds.keys().at(i);
@@ -194,42 +198,62 @@ void MainWindow::find_range() {
     }
   }
   ui->reads_label->setText(QString("%L1 minimum picks").arg(trials));
-  ui->reads->setValue(trials);
+  ui->reads->setValue(static_cast<int>(trials));
 }
 
 void MainWindow::narrow_range(unsigned long start, unsigned long end) {
   unsigned long trial =
       static_cast<unsigned long>(floor((end - start) / 2) + start);
-  double csum = cumulative_p_at_trial(trial);
-  qDebug() << csum;
-  if (fabs(csum - target) < 0.01) {
+  long double cprod = cumulative_product_at_trial(trial);
+  if (fabs(cprod - static_cast<long double>(target)) <
+      static_cast<long double>(0.01)) {
     trials = trial;
-    qDebug() << "(narrow_round_range) Closest Confidence: " << csum;
-    qDebug() << "(narrow_round_range) Trials: " << trials;
-  } else if (csum > target) {
+    ui->set_label->setText("Completeness of Items: " +
+                           QString::number(static_cast<double>(cprod), 'f', 3));
+    long double value =
+        (prior_distribution.fcount - 1 + cumulative_p_at_trial(trial)) /
+        prior_distribution.fcount;
+    ui->element_label->setText(
+        "Completeness of Set: " +
+        QString::number(static_cast<double>(value), 'f', 3));
+  } else if (cprod > static_cast<long double>(target)) {
     narrow_range(start, trial);
   } else {
     narrow_range(trial, end);
   }
 }
 
-double MainWindow::cumulative_p_at_trial(unsigned long trial) {
-  double cum_sum = 0.0;
+long double MainWindow::cumulative_p_at_trial(unsigned long trial) {
+  long double cum_sum = static_cast<long double>(0.0);
   QList<QString> genes = prior_distribution._bound_counts.keys();
   for (int i = 0; i < genes.length(); i++) {
     QString fgene = genes.at(i);
-    double p =
-        prior_distribution._bound_counts[fgene] / prior_distribution.fcount;
-    double np = 1 - p;
+    long double p = static_cast<long double>(
+        prior_distribution._bound_counts[fgene] / prior_distribution.fcount);
+    long double np = static_cast<long double>(1.0) - p;
     cum_sum += pow(np, trial);
   }
-  return 1 - cum_sum;
+  long double value = static_cast<long double>(cum_sum);
+  return value;
+}
+
+long double MainWindow::cumulative_product_at_trial(unsigned long trial) {
+  long double cum_prod = static_cast<long double>(1.0);
+  QList<QString> genes = prior_distribution._bound_counts.keys();
+  for (int i = 0; i < genes.length(); i++) {
+    QString fgene = genes.at(i);
+    long double p = static_cast<long double>(
+        prior_distribution._bound_counts[fgene] / prior_distribution.fcount);
+    long double np = static_cast<long double>(1.0) - p;
+    cum_prod = cum_prod * (1 - pow(np, trial));
+  }
+  return static_cast<long double>(cum_prod);
 }
 
 void MainWindow::on_confidence_valueChanged(double arg1) { find_range(); }
 
 void MainWindow::on_cutoff_editingFinished() {
-  qDebug() << "*** Cutoff Changed ***";
+  //  qDebug() << "*** Cutoff Changed ***";
   prior_distribution._filtered_counts.clear();
   prior_distribution._simulated_counts.clear();
   calculate_occurance();
@@ -300,8 +324,8 @@ void MainWindow::update_table_colors(QTableWidget *table) {
 
 void MainWindow::showPointToolTip(QMouseEvent *event) {
   int x = ui->customPlot->xAxis->pixelToCoord(event->pos().x());
-  if (x >= 0 && x <= prior_distribution.p.length()) {
-  }
+  //  if (x >= 0 && x <= prior_distribution.p.length()) {
+  //  }
   //  ui->customPlot->setToolTip(QString("%1 , %2").arg(x).arg(y));
 }
 
@@ -358,7 +382,7 @@ void MainWindow::simulation_finished(int thread) {
     update_counts_table();
     update_table_colors(ui->count_table);
     //    qDebug() << prior_distribution._simulated_counts;
-    qDebug() << "Simulation Finished";
+    //    qDebug() << "Simulation Finished";
   } else {
     control_threads();
   }

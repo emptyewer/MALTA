@@ -24,7 +24,6 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    filereader.cpp \
     qcustomplot.cpp \
     mcworker.cpp \
     customtablewidgetitem.cpp \
@@ -32,7 +31,6 @@ SOURCES += main.cpp\
     superslider.cpp
 
 HEADERS  += mainwindow.h \
-    filereader.h \
     includes.h \
     structs.h \
     qcustomplot.h \

@@ -17,14 +17,14 @@
 	<key>NSHumanReadableCopyright</key>
 	<string>Copyright © 2017 Venkatramanan Krishnamani, Robert C. Piper, Mark Stammnes.</string>
 	<key>CFBundleDisplayName</key>
-	<string>MALTA β0.2</string>
+	<string>MALTA 1.0</string>
 	<key>CFBundleName</key>
-	<string>MALTA β0.2</string>
+	<string>MALTA 1.0</string>
 	<key>CFBundleVersion</key>
-	<string>β0.2</string>
+	<string>1.0</string>
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.education</string>
 	<key>CFBundleShortVersionString</key>
-	<string>β0.2</string>
+	<string>1.0</string>
 </dict>
 </plist>

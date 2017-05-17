@@ -1,7 +1,6 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include "filereader.h"
 #include "structs.h"
 #include <QMainWindow>
 #include <QSortFilterProxyModel>
@@ -43,7 +42,6 @@ private slots:
 
 private:
   Ui::MainWindow *ui;
-  FileReader *f;
   prior prior_distribution;
   QMap<unsigned long, double> rounds;
   unsigned long trials;
@@ -55,7 +53,7 @@ private:
   int threads;
   void find_range();
   void narrow_range(unsigned long start, unsigned long end);
-  double cumulative_p_at_trial(unsigned long);
+  long double cumulative_p_at_trial(unsigned long);
   void update_counts_table();
   void plot_counts();
   void calculate_occurance();
@@ -69,6 +67,7 @@ private:
   void launch_mc_threaad(QList<QString>);
   void control_threads();
   QStringList headers;
+  long double cumulative_product_at_trial(unsigned long trial);
 };
 
 #endif // MAINWINDOW_H

@@ -3,14 +3,14 @@
 #include <QMap>
 
 struct prior {
-  QList<QString> genes;
-  QList<double> counts;
-  QList<QString> filtered_genes;
-  QList<double> filtered_counts;
-  QList<QList<double>> simulated_counts;
-  QList<double> p;
-  QList<double> np;
-  QList<double> cum_np;
+  //  QList<QString> genes;
+  //  QList<double> counts;
+  //  QList<QString> filtered_genes;
+  //  QList<double> filtered_counts;
+  //  QList<QList<double>> simulated_counts;
+  //  QList<double> p;
+  //  QList<double> np;
+  //  QList<double> cum_np;
   //
   QMap<QString, double> _counts;
   QMap<QString, double> _filtered_counts;
