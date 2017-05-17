@@ -60,3 +60,8 @@ win32 {
     ICON = Icon.ico
     #"C:\Qt\5.7\msvc2013_64\bin\windeployqt <path to the binary>"
 }
+
+unix:!macx {
+    INCLUDEPATH += $PWD/../../../../usr/include
+    DEPENDPATH += $PWD/../../../../usr/include
+}
