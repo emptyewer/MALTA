@@ -323,7 +323,7 @@ void MainWindow::update_table_colors(QTableWidget *table) {
 }
 
 void MainWindow::showPointToolTip(QMouseEvent *event) {
-  int x = ui->customPlot->xAxis->pixelToCoord(event->pos().x());
+  //  int x = ui->customPlot->xAxis->pixelToCoord(event->pos().x());
   //  if (x >= 0 && x <= prior_distribution.p.length()) {
   //  }
   //  ui->customPlot->setToolTip(QString("%1 , %2").arg(x).arg(y));
