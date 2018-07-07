@@ -53,6 +53,7 @@ macx {
     QMAKE_EXTRA_TARGETS += first copyinfo
     QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.10
     QMAKE_POST_LINK += "/Users/Venky/Qt/5.10.1/clang_64/bin/macdeployqt MALTA.app -no-strip"
+    QMAKE_LFLAGS += -Bstatic
 }
 
 win32 {
