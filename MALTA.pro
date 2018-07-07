@@ -57,7 +57,8 @@ macx {
 
 win32 {
     ICON = Icon.ico
-    #"C:\Qt\5.7\msvc2013_64\bin\windeployqt <path to the binary>"
+    QMAKE_POST_LINK += "C:\Qt\5.10.1\mingw53_32\bin\windeployqt C:\Users\Venky\build-MALTA-Desktop_Qt_5_10_1_MinGW_32bit-Release\release\MALTA.exe"
+    QMAKE_LFLAGS += -static
 }
 
 unix:!macx {
