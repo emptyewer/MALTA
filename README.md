@@ -6,6 +6,19 @@ Objects in the **M**irror **A**ppear **L**arger **T**han **A**ctual
 
 ![alt text](malta.png "")
 
+## Installation
+
+### Windows
+
+> Unzip `MALTA_1.0_win32.zip`. This will extract the executable and all the supporting libraries in the same folder. Run `MALTA.exe`
+
+### Mac
+
+> Unzip `MALTA_1.0.macOS.zip`. This will extract `MALTA.app`.
+
+### Linux
+
+> Download `MALTA_1.0_linux_x64.AppImage` to your desired folder. In the terminal execute `chmod a+x MALTA_1.0_linux_x64.AppImage` to attach executable permissions. Then run `./MALTA_1.0_linux_x64.AppImage` to launch the program.
 
 ## Features
 
