@@ -1,5 +1,10 @@
 #include "mcworker.h"
 #include "includes.h"
+#include <chrono>
+#include <random>
+
+static std::mt19937
+    rng(std::chrono::high_resolution_clock::now().time_since_epoch().count());
 
 MCWorker::MCWorker(QMap<QString, double> a, QList<QString> g, unsigned long c,
                    unsigned long t, int th) {
@@ -17,7 +22,10 @@ void MCWorker::doWork() {
     int count = 0;
     for (unsigned long j = 0; j < trials; j++) {
       if (counting) {
-        double r = static_cast<double>(rand() / static_cast<double>(RAND_MAX));
+        //        double r = static_cast<double>(rand() /
+        //        static_cast<double>(RAND_MAX));
+        double r =
+            static_cast<double>(rng()) / (static_cast<double>(rng.max()));
         if (r < p) {
           count = count + 1;
         }
