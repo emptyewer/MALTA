@@ -342,13 +342,14 @@ void MainWindow::control_threads() {
   threads = 1;
   QList<QString> genes = get_sorted_genes();
   while (true) {
-    if (repeats > 10) {
+    if (repeats > ui->runs->value()) {
       break;
     }
     if (threads > QThread::idealThreadCount()) {
       break;
     }
     launch_mc_threaad(genes);
+    //    qDebug() << "Run" << repeats;
     threads += 1;
     repeats += 1;
   }
@@ -378,7 +379,7 @@ void MainWindow::partial_simulation_finished(int value, QString gene) {
 
 void MainWindow::simulation_finished(int thread) {
   ui->simulate->setEnabled(true);
-  if (thread == 10) {
+  if (thread == ui->runs->value()) {
     update_counts_table();
     update_table_colors(ui->count_table);
     //    qDebug() << prior_distribution._simulated_counts;
