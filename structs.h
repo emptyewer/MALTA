@@ -16,7 +16,7 @@ struct prior {
   QMap<QString, double> _filtered_counts;
   QMap<QString, double> _bound_counts;
   QMap<QString, QList<double>> _simulated_counts;
-  unsigned int fcount;
+  double fcount;
 };
 
 struct greater_comp {

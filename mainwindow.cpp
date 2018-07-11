@@ -333,7 +333,7 @@ void MainWindow::on_simulate_clicked() {
   repeats = 1;
   QList<QString> genes = get_sorted_genes();
   for (int j = 0; j < genes.size(); ++j) {
-    prior_distribution._simulated_counts[genes[j]] = {};
+    prior_distribution._simulated_counts[genes[j]].clear();
   }
   control_threads();
 }
@@ -358,32 +358,41 @@ void MainWindow::control_threads() {
 void MainWindow::launch_mc_threaad(QList<QString> genes) {
   QThread *workerThread = new QThread;
   MCWorker *worker;
-  worker = new MCWorker(prior_distribution._filtered_counts, genes,
-                        prior_distribution.fcount, ui->reads->value(), repeats);
+  qRegisterMetaType<QMap<QString, unsigned long>>();
+
+  worker = new MCWorker(
+      prior_distribution._filtered_counts, genes, prior_distribution.fcount,
+      static_cast<unsigned long>(ui->reads->value()), repeats);
 
   worker->moveToThread(workerThread);
-  connect(workerThread, SIGNAL(started()), worker, SLOT(doWork()));
-  connect(worker, SIGNAL(finished(int)), workerThread, SLOT(quit()));
-  connect(worker, SIGNAL(finished(int)), worker, SLOT(deleteLater()));
-  connect(worker, SIGNAL(finished(int)), this, SLOT(simulation_finished(int)));
+
+  connect(worker,
+          SIGNAL(linear_search_finished(int, QMap<QString, unsigned long>)),
+          this, SLOT(ls_finished(int, QMap<QString, unsigned long>)));
+
+  connect(worker,
+          SIGNAL(linear_search_finished(int, QMap<QString, unsigned long>)),
+          workerThread, SLOT(quit()));
+  connect(worker,
+          SIGNAL(linear_search_finished(int, QMap<QString, unsigned long>)),
+          worker, SLOT(deleteLater()));
+
+  connect(workerThread, SIGNAL(started()), worker, SLOT(linearSearch()));
   connect(workerThread, SIGNAL(finished()), workerThread, SLOT(deleteLater()));
-  connect(worker, SIGNAL(update_value(int, QString)), this,
-          SLOT(partial_simulation_finished(int, QString)));
   workerThread->start();
   ui->simulate->setEnabled(false);
 }
 
-void MainWindow::partial_simulation_finished(int value, QString gene) {
-  prior_distribution._simulated_counts[gene].append(value);
-}
-
-void MainWindow::simulation_finished(int thread) {
+void MainWindow::ls_finished(int thread,
+                             QMap<QString, unsigned long> gene_picks) {
   ui->simulate->setEnabled(true);
-  if (thread == ui->runs->value()) {
+  for (QString gene : gene_picks.keys()) {
+    prior_distribution._simulated_counts[gene].append(gene_picks.value(gene));
+  }
+  if (thread >= ui->runs->value()) {
+    qDebug() << thread << ui->runs->value();
     update_counts_table();
     update_table_colors(ui->count_table);
-    //    qDebug() << prior_distribution._simulated_counts;
-    //    qDebug() << "Simulation Finished";
   } else {
     control_threads();
   }

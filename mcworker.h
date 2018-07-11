@@ -6,21 +6,20 @@
 class MCWorker : public QObject {
   Q_OBJECT
 public:
-  explicit MCWorker(QMap<QString, double>, QList<QString>, unsigned long c,
+  explicit MCWorker(QMap<QString, double>, QList<QString>, double c,
                     unsigned long t, int);
 
 public slots:
-  void doWork();
   void stopWork();
+  void linearSearch();
 
 signals:
-  void update_value(int, QString);
-  void finished(int);
+  void linear_search_finished(int, QMap<QString, unsigned long>);
 
 private:
   QMap<QString, double> map;
   QList<QString> genes;
-  unsigned long count;
+  double count;
   unsigned long trials;
   bool counting;
   int thread;

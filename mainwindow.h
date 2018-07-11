@@ -27,17 +27,11 @@ private slots:
   void on_confidence_valueChanged(double arg1);
   void showPointToolTip(QMouseEvent *event);
   void on_cutoff_editingFinished();
-
   void on_simulate_clicked();
-  void partial_simulation_finished(int, QString);
-  void simulation_finished(int);
-
+  void ls_finished(int, QMap<QString, unsigned long>);
   void on_lower_slider_sliderReleased();
-
   void on_upper_slider_sliderReleased();
-
   void on_upper_slider_valueChanged(int value);
-
   void on_lower_slider_valueChanged(int value);
 
 private:
