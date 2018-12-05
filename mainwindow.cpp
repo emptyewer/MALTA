@@ -58,7 +58,7 @@ void MainWindow::on_action_import_prior_triggered() {
         }
       }
     }
-    ui->cutoff->setMaximum(max);
+    ui->cutoff->setMaximum(max * 0.9);
     ui->cutoff->setMinimum(0.0);
     //    qDebug() << "Lower Slider: " << ui->lower_slider->value();
     //    qDebug() << "Upper Slider: " << ui->upper_slider->value();
