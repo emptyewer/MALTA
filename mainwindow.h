@@ -46,7 +46,8 @@ private:
   int repeats;
   int threads;
   void find_range();
-  void narrow_range(unsigned long start, unsigned long end);
+  void narrow_range(unsigned long start, unsigned long end,
+                    long double prev_fabs);
   long double cumulative_p_at_trial(unsigned long);
   void update_counts_table();
   void plot_counts();

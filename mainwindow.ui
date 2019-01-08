@@ -452,12 +452,16 @@
   </customwidget>
  </customwidgets>
  <tabstops>
-  <tabstop>confidence</tabstop>
-  <tabstop>simulate</tabstop>
   <tabstop>prior_table</tabstop>
   <tabstop>tabWidget</tabstop>
   <tabstop>count_table</tabstop>
   <tabstop>cutoff</tabstop>
+  <tabstop>lower_slider</tabstop>
+  <tabstop>upper_slider</tabstop>
+  <tabstop>reads</tabstop>
+  <tabstop>runs</tabstop>
+  <tabstop>confidence</tabstop>
+  <tabstop>simulate</tabstop>
  </tabstops>
  <resources/>
  <connections/>

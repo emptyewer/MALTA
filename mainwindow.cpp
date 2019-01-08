@@ -193,20 +193,24 @@ void MainWindow::find_range() {
   for (int i = 1; i < rounds.keys().length(); i++) {
     unsigned long prev_key = rounds.keys().at(i - 1);
     unsigned long key = rounds.keys().at(i);
+    //    qDebug() << target << rounds[prev_key] << rounds[key];
     if (target > rounds[prev_key] && target < rounds[key]) {
-      narrow_range(prev_key, key);
+      narrow_range(prev_key, key, 0.0);
     }
   }
   ui->reads_label->setText(QString("%L1 minimum picks").arg(trials));
   ui->reads->setValue(static_cast<int>(trials));
+  //  qDebug() << "(find_range) Finished";
 }
 
-void MainWindow::narrow_range(unsigned long start, unsigned long end) {
+void MainWindow::narrow_range(unsigned long start, unsigned long end,
+                              long double prev_fabs) {
   unsigned long trial =
       static_cast<unsigned long>(floor((end - start) / 2) + start);
   long double cprod = cumulative_product_at_trial(trial);
-  if (fabs(cprod - static_cast<long double>(target)) <
-      static_cast<long double>(0.01)) {
+  //  qDebug() << "fabs" << fabs(double(cprod) - target);
+  long double fab_sub = fabs(cprod - static_cast<long double>(target));
+  if (fab_sub < static_cast<long double>(0.01) || fab_sub == prev_fabs) {
     trials = trial;
     ui->set_label->setText("Completeness of Items: " +
                            QString::number(static_cast<double>(cprod), 'f', 3));
@@ -217,9 +221,11 @@ void MainWindow::narrow_range(unsigned long start, unsigned long end) {
         "Completeness of Set: " +
         QString::number(static_cast<double>(value), 'f', 3));
   } else if (cprod > static_cast<long double>(target)) {
-    narrow_range(start, trial);
+    //    qDebug() << start << end;
+    narrow_range(start, trial, fab_sub);
   } else {
-    narrow_range(trial, end);
+    //    qDebug() << start << end;
+    narrow_range(trial, end, fab_sub);
   }
 }
 
@@ -390,7 +396,7 @@ void MainWindow::ls_finished(int thread,
     prior_distribution._simulated_counts[gene].append(gene_picks.value(gene));
   }
   if (thread >= ui->runs->value()) {
-    qDebug() << thread << ui->runs->value();
+    //    qDebug() << thread << ui->runs->value();
     update_counts_table();
     update_table_colors(ui->count_table);
   } else {
